@@ -1,3 +1,4 @@
+import { additionMod2 } from "./additionMod2";
 import { reverseMethodL } from "./methodL";
 import { reverseSConversion } from "./sConversion";
 

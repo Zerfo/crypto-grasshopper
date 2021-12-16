@@ -1,4 +1,5 @@
 import { BLOCK_SIZE, Pi, reversePi } from "../constants";
+import { range } from "lodash";
 
 // S-преобразование
 export function sConversion(inData) {
@@ -16,7 +17,7 @@ export function sConversion(inData) {
 
 // Обратное преобразование(используется для расшифровки)
 export function reverseSConversion(inData) {
-  let outData = _.range(inData.length);
+  let outData = range(inData.length);
 
   for (let i = 0; i < BLOCK_SIZE; i++) {
     let data = inData[i];
