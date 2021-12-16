@@ -36,7 +36,7 @@ export default function Home() {
 
       <Box sx={{ width: '100%' }}>
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-        <Tabs value={tab} onChange={handleChangeTab} aria-label="basic tabs example">
+        <Tabs value={tab} onChange={handleChangeTab}>
           <Tab label="Генерация ключа" {...a11yProps(0)} />
           <Tab label="Кодирование" {...a11yProps(1)} />
           <Tab label="Декодирование" {...a11yProps(2)} />

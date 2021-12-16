@@ -50,7 +50,6 @@ function Decode() {
       }}
     >
       <TextareaAutosize
-        aria-label="empty textarea"
         onChange={handleChangeIncodeStr}
         placeholder="Исходный текст"
         style={{ width: 400, height: 200 }}
