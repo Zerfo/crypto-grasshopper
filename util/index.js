@@ -7,7 +7,7 @@ import {
   lVec,
   Pi,
   reversePi,
-} from "./constants.js";
+} from "../constants";
 import _ from "lodash";
 
 // Сложение 2х двоичных векторов по модулю 2
