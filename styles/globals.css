@@ -1,3 +1,8 @@
+@import "@fontsource/roboto/300.css";
+@import "@fontsource/roboto/400.css";
+@import "@fontsource/roboto/500.css";
+@import "@fontsource/roboto/700.css";
+
 html,
 body {
   padding: 0;
@@ -13,4 +18,12 @@ a {
 
 * {
   box-sizing: border-box;
+}
+
+.caption {
+  width: 100%;
+  margin: 25px 0 !important;
+  text-align: center;
+  position: fixed;
+  bottom: 0;
 }
