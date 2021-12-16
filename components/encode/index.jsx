@@ -86,7 +86,7 @@ function Encode() {
         </label>
         <Button
           component="span"
-          disabled={!keyFile}
+          disabled={!keyFile || incodeStr?.length < 32}
           onClick={onEncode}
           sx={{ width: 190 }}
           variant="contained"
