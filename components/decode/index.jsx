@@ -29,8 +29,8 @@ function Decode() {
     [],
   );
 
-  const onDecode = useCallback(() => {
-    ax.post('/api/decode', { keyFile, incodeStr });
+  const onDecode = useCallback(async () => {
+    const res = await ax.post('/api/decode', { keyFile, incodeStr });
   }, [incodeStr, keyFile]);
 
   const handleChangeIncodeStr = useCallback(({ target }) => setIncodeStr(target.value), []);

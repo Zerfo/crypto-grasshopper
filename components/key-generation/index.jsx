@@ -1,9 +1,14 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 
+import ax from 'axios';
+
 function KeyGeneration() {
+  const [keyFile, setKeyFile] = useState(null);
+
   const onDownload = () => {
     const link = document.createElement("a");
     link.download = `download.txt`;
@@ -11,10 +16,9 @@ function KeyGeneration() {
     link.click();
   };
 
-  useEffect(() => {
-    async function fetch() {
-      const response = await instance.get("api/generate");
-    }
+  useEffect(async () => {
+    const res = await ax.get("/api/generate");
+    console.log(res);
   }, []);
 
   return (

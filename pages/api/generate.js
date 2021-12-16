@@ -1,4 +1,3 @@
-import { GOST_Kuz_Expand_Key } from "../../util";
 import { generateExpandKey } from "../../util/generateExpandKey";
 
 const key1 = [
@@ -12,6 +11,5 @@ const key2 = [
 
 export default function handler(req, res) {
   const key = generateExpandKey(key1, key2).flat();
-  console.log(key);
-  res.status(200).json({ name: "John Doe" });
+  res.status(200).json({ key });
 }
