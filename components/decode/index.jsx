@@ -1,4 +1,6 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
+
+import ax from 'axios';
 
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
@@ -15,6 +17,23 @@ const Input = styled('input')({
 
 function Decode() {
   const [decodeText, setDecodeText] = useState(null);
+  const [keyFile, setKeyFile] = useState(null);
+  const [incodeStr, setIncodeStr] = useState('')
+
+  const onUploadFile = useCallback(
+    ({ target }) => {
+      const fileReader = new FileReader();
+      fileReader.readAsDataURL(target.files[0]);
+      fileReader.onload = (e) => setKeyFile(e.target.result);
+    },
+    [],
+  );
+
+  const onDecode = useCallback(() => {
+    ax.post('/api/decode', { keyFile, incodeStr });
+  }, [incodeStr, keyFile]);
+
+  const handleChangeIncodeStr = useCallback(({ target }) => setIncodeStr(target.value), []);
 
   return <Box
     sx={{
@@ -29,6 +48,7 @@ function Decode() {
       aria-label="empty textarea"
       placeholder="Исходный текст"
       style={{ width: 400, height: 200 }}
+      onChange={handleChangeIncodeStr}
     />
 
     <Typography>Выберите ранее сгенерированный ключ</Typography>
@@ -39,12 +59,12 @@ function Decode() {
       }}
     >
       <label sx={{ width: 190 }} htmlFor="contained-button-file">
-        <Input accept="image/*" id="contained-button-file" multiple type="file" />
+        <Input accept='text/*' id="contained-button-file" multiple type="file" onChange={onUploadFile} />
         <Button variant="contained" component="span" startIcon={<FileUploadIcon />}>
           Загрузить ключ
         </Button>
       </label>
-      <Button sx={{ width: 190 }} variant="contained" component="span">
+      <Button sx={{ width: 190 }} variant="contained" component="span" onClick={onDecode}>
         Декодировать
       </Button>
     </Box>
