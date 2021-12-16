@@ -1,8 +1,6 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 
-import {
-  GOST_Kuz_Decrypt,
-} from "../../util";
+import { decrypt } from '../../util/decrypt';
 
 const key1 = [
   0x77, 0x66, 0x55, 0x44, 0x33, 0x22, 0x11, 0x00, 0xff, 0xee, 0xdd, 0xcc, 0xbb,

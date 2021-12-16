@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
@@ -6,19 +6,22 @@ import Box from "@mui/material/Box";
 
 import ax from 'axios';
 
+import { dataURLtoFile } from '../../util/dataURLtoFile';
+
 function KeyGeneration() {
   const [keyFile, setKeyFile] = useState(null);
 
-  const onDownload = () => {
+  const onDownload = useCallback(() => {
     const link = document.createElement("a");
-    link.download = `download.txt`;
-    link.href = "./download.txt";
+    link.download = `key.txt`;
+    link.href = keyFile;
     link.click();
-  };
+  }, [keyFile]);
 
   useEffect(async () => {
-    const res = await ax.get("/api/generate");
-    console.log(res);
+    const { data } = await ax.get("/api/generate") || {};
+    const { key } = data || {};
+    setKeyFile(key)
   }, []);
 
   return (

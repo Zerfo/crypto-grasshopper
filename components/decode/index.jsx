@@ -18,7 +18,7 @@ const Input = styled('input')({
 function Decode() {
   const [decodeText, setDecodeText] = useState(null);
   const [keyFile, setKeyFile] = useState(null);
-  const [incodeStr, setIncodeStr] = useState('')
+  const [incodeStr, setIncodeStr] = useState("6e3ad9329ae894295e1b724851f7276e266cfd00e9eb0c51dd361ee1a87ccae9d3cd0d259746796d4d7acb4e4a2076d7b419c089ec19ddb1ead293b5");
 
   const onUploadFile = useCallback(
     ({ target }) => {
@@ -49,6 +49,7 @@ function Decode() {
       placeholder="Исходный текст"
       style={{ width: 400, height: 200 }}
       onChange={handleChangeIncodeStr}
+      value={incodeStr}
     />
 
     <Typography>Выберите ранее сгенерированный ключ</Typography>

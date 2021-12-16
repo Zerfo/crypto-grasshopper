@@ -1,3 +1,5 @@
+import { Buffer } from 'buffer';
+
 import { generateExpandKey } from "../../util/generateExpandKey";
 
 const key1 = [
@@ -10,6 +12,8 @@ const key2 = [
 ];
 
 export default function handler(req, res) {
-  const key = generateExpandKey(key1, key2).flat();
-  res.status(200).json({ key });
+  const key = generateExpandKey(key1, key2).flat().join(',');
+  const buf = Buffer.from(key, 'utf8').toString('base64');
+
+  res.status(200).json({ key: `data:text/plain;base64,${buf}` });
 }
