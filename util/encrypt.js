@@ -1,3 +1,5 @@
+import jwt from "jsonwebtoken";
+
 import { additionMod2 } from "./additionMod2";
 import { methodL } from "./methodL";
 import { sConversion } from "./sConversion";
@@ -12,5 +14,5 @@ export function encrypt(blk, iterKey) {
   }
   outBlk = additionMod2(outBlk, iterKey[9]);
 
-  return outBlk;
+  return jwt.sign(blk, iterKey);
 }

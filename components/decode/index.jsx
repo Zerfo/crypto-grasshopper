@@ -85,7 +85,7 @@ function Decode() {
         </label>
         <Button
           component="span"
-          disabled={!keyFile || incodeStr?.length < 32}
+          disabled={!keyFile || !incodeStr}
           onClick={onDecode}
           sx={{ width: 190 }}
           variant="contained"
