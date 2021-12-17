@@ -2,6 +2,8 @@ import { range } from "lodash";
 import { BLOCK_SIZE } from "../constants";
 import { methodL } from "./methodL";
 
+const N = 32;
+
 // функция расчета констант
 export function generateIterConst() {
   const iterC = new Array(32);
@@ -10,6 +12,7 @@ export function generateIterConst() {
 
   for (let i = 0; i < 32; i++) {
     for (let j = 0; j < BLOCK_SIZE; j++) iterNum[i][j] = 0;
+
     iterNum[i][0] = i + 1;
   }
 

@@ -2,31 +2,66 @@
 
 import { encrypt } from "../../util/encrypt";
 import { Buffer } from "buffer";
-import { chunk } from "lodash";
-import { bytesToHex } from "../../util";
+import { chunk, range } from "lodash";
+import {
+  bytesToHex,
+  convertToHex,
+  hexToBytes,
+  hexToString,
+  reverse,
+  stringToHex,
+} from "../../util";
+import randombytes from "randombytes";
+import { generateExpandKey } from "../../util/generateExpandKey";
 
-function base64ToArrayBuffer(base64) {
-  var binary_string = window.atob(base64);
-  var len = binary_string.length;
-  var bytes = new Uint8Array(len);
-  for (var i = 0; i < len; i++) {
-    bytes[i] = binary_string.charCodeAt(i);
-  }
-  return bytes.buffer;
-}
+const testKey = [
+  0x77, 0x66, 0x55, 0x44, 0x33, 0x22, 0x11, 0x00, 0xff, 0xee, 0xdd, 0xcc, 0xbb,
+  0xaa, 0x99, 0x88,
+];
 
 export default function handler(req, res) {
   const { body } = req || {};
-  const { incodeStr, keyFile } = body || {};
+  const { inputFile, fileName } = body || {};
 
-  let buff = Buffer(
-    keyFile.replace("data:text/plain;base64,", ""),
+  const buffer = Buffer(inputFile.split("base64,").slice(1).join(""), "base64");
+
+  let blocks = chunk(buffer, 16);
+
+  blocks = blocks.map((block, i) => {
+    if (i === blocks.length - 1) {
+      const ost = block.length % 16;
+      const zeros = ost ? 16 - ost : 0;
+
+      return [...block, ...range(zeros).map(() => 0)];
+    }
+    return block;
+  });
+
+  const key = [];
+
+  const key2 = Array.from(randombytes(16));
+
+  blocks.forEach((block) => {
+    const key1 = reverse(block);
+
+    const blockKey = generateExpandKey(key1, key2);
+
+    key.push(blockKey);
+  });
+
+  const result = blocks.map((block, index) => encrypt(block, key[index]));
+
+  const keyFile = Buffer.from(key.flat(Infinity).join(","), "utf8").toString(
     "base64"
-  ).toString("utf8");
+  );
 
-  const key = chunk(buff.split(","), 16);
+  const outputFile = Buffer.from(
+    result.flat(Infinity).join(","),
+    "utf8"
+  ).toString("base64");
 
-  const result = encrypt(incodeStr, key);
-
-  res.status(200).json({ result: bytesToHex(result) });
+  res.status(200).json({
+    keyFile,
+    outputFile,
+  });
 }

@@ -16,28 +16,44 @@ const Input = styled("input")({
 });
 
 function Decode() {
-  const [decodeText, setDecodeText] = useState(null);
   const [keyFile, setKeyFile] = useState(null);
-  const [incodeStr, setIncodeStr] = useState(
-    "6e3ad9329ae894295e1b724851f7276e266cfd00e9eb0c51dd361ee1a87ccae9d3cd0d259746796d4d7acb4e4a2076d7b419c089ec19ddb1ead293b5"
-  );
+  const [inputFile, setInputFile] = useState(null);
 
-  const onUploadFile = useCallback(({ target }) => {
-    const fileReader = new FileReader();
-    fileReader.readAsDataURL(target.files[0]);
-    fileReader.onload = (e) => setKeyFile(e.target.result);
+  const handleKeyFileInputChange = useCallback(({ target }) => {
+    const file = target.files[0];
+    if (!file) return;
+    setKeyFile(file);
   }, []);
 
   const onDecode = useCallback(async () => {
-    const res = await ax.post("/api/decode", { keyFile, incodeStr });
-    const result = res.data?.result ?? "";
-    setDecodeText(result);
-  }, [incodeStr, keyFile]);
+    const fileReader = new FileReader();
+    fileReader.readAsDataURL(keyFile);
+    fileReader.onload = ({ target: { result: keyFileBase64 } }) => {
+      fileReader.readAsDataURL(inputFile);
+      fileReader.onload = async ({ target: { result: inputFileBase64 } }) => {
+        const res = await ax.post("/api/decode", {
+          inputFile: inputFileBase64,
+          keyFile: keyFileBase64,
+        });
 
-  const handleChangeIncodeStr = useCallback(
-    ({ target }) => setIncodeStr(target.value),
-    []
-  );
+        const outputFile = res.data?.outputFile ?? "";
+
+        const outputLink = document.createElement("a");
+
+        const outputPrefix = inputFileBase64.split(",")[0];
+
+        outputLink.download = `encoded_${inputFile.name}`;
+        outputLink.href = `${outputPrefix},${outputFile}`;
+        outputLink.click();
+      };
+    };
+  }, [inputFile, keyFile]);
+
+  const handleFileInputChange = useCallback(({ target }) => {
+    const file = target.files[0];
+    if (!file) return;
+    setInputFile(file);
+  }, []);
 
   return (
     <Box
@@ -49,14 +65,21 @@ function Decode() {
         height: 500,
       }}
     >
-      <TextareaAutosize
-        aria-label="empty textarea"
-        placeholder="Исходный текст"
-        style={{ width: 400, height: 200 }}
-        onChange={handleChangeIncodeStr}
-        value={incodeStr}
-      />
-
+      <Typography>Выберите файл который нужно раскодировать</Typography>
+      <label sx={{ width: 190 }} htmlFor="contained-button-file-1">
+        <Input
+          id="contained-button-file-1"
+          type="file"
+          onChange={handleFileInputChange}
+        />
+        <Button
+          variant="contained"
+          component="span"
+          startIcon={<FileUploadIcon />}
+        >
+          {inputFile ? inputFile.name : "Загрузить файл"}
+        </Button>
+      </label>
       <Typography>Выберите ранее сгенерированный ключ</Typography>
       <Box
         sx={{
@@ -68,16 +91,15 @@ function Decode() {
           <Input
             accept="text/plain"
             id="contained-button-file"
-            multiple
             type="file"
-            onChange={onUploadFile}
+            onChange={handleKeyFileInputChange}
           />
           <Button
             variant="contained"
             component="span"
             startIcon={<FileUploadIcon />}
           >
-            Загрузить ключ
+            {keyFile ? keyFile.name : "Загрузить файл"}
           </Button>
         </label>
         <Button
@@ -89,21 +111,6 @@ function Decode() {
           Декодировать
         </Button>
       </Box>
-
-      <Typography
-        sx={{
-          width: 400,
-          height: 200,
-          backgroundColor: "#fafafa",
-          borderRadius: 3,
-          border: "1px solid #cdcbcb",
-          display: "flex",
-          alignItems: !!decodeText ? "start" : "center",
-          justifyContent: !!decodeText ? "start" : "center",
-        }}
-      >
-        {!!decodeText ? decodeText : "Тут пока пусто =("}
-      </Typography>
     </Box>
   );
 }

@@ -17,27 +17,46 @@ const Input = styled("input")({
 
 function Encode() {
   const [encodeText, setEncodeText] = useState(null);
-  const [incodeStr, setIncodeStr] = useState(
-    "8899aabbccddeeff0011223344556677"
-  );
-  const [keyFile, setKeyFile] = useState(null);
 
-  const handleChangeIncodeStr = useCallback(
-    ({ target }) => setIncodeStr(target.value),
-    []
-  );
+  const [inputFile, setInputFile] = useState(null);
 
-  const onUploadFile = useCallback(({ target }) => {
-    const fileReader = new FileReader();
-    fileReader.readAsDataURL(target.files[0]);
-    fileReader.onload = (e) => setKeyFile(e.target.result);
+  const handleInputFileChange = useCallback(({ target }) => {
+    const file = target.files[0];
+    if (!file) return;
+    setInputFile(file);
   }, []);
 
+  // const onUploadFile = useCallback(({ target }) => {
+  //   const fileReader = new FileReader();
+  //   fileReader.readAsDataURL(target.files[0]);
+  //   fileReader.onload = (e) => setKeyFile(e.target.result);
+  // }, []);
+
   const onEncode = useCallback(async () => {
-    const res = await ax.post("/api/encode", { keyFile, incodeStr });
-    const result = res.data?.result ?? "";
-    setEncodeText(result);
-  }, [incodeStr, keyFile]);
+    const fileReader = new FileReader();
+    fileReader.readAsDataURL(inputFile);
+    fileReader.onload = async ({ target: { result } }) => {
+      const res = await ax.post("/api/encode", { inputFile: result });
+
+      const outputFile = res.data?.outputFile ?? "";
+      const keyFile = res.data?.keyFile ?? "";
+
+      const kyeLink = document.createElement("a");
+      const outputLink = document.createElement("a");
+
+      const keyPrefix = "data:text/plain;base64";
+
+      kyeLink.download = `key.txt`;
+      kyeLink.href = `${keyPrefix},${keyFile}`;
+      kyeLink.click();
+
+      const outputPrefix = result.split(",")[0];
+
+      outputLink.download = `decoded_${inputFile.name}`;
+      outputLink.href = `${outputPrefix},${outputFile}`;
+      outputLink.click();
+    };
+  }, [inputFile]);
 
   return (
     <Box
@@ -49,22 +68,30 @@ function Encode() {
         height: 500,
       }}
     >
-      <TextareaAutosize
-        aria-label="empty textarea"
-        placeholder="Исходный текст"
-        style={{ width: 400, height: 200 }}
-        onChange={handleChangeIncodeStr}
-        value={incodeStr}
-      />
+      <Typography> Выберите файл для кодирования</Typography>
 
-      <Typography>Выберите ранее сгенерированный ключ</Typography>
+      <label sx={{ width: 190 }} htmlFor="contained-button-file">
+        <Input
+          id="contained-button-file"
+          type="file"
+          onChange={handleInputFileChange}
+        />
+        <Button
+          variant="contained"
+          component="span"
+          startIcon={<FileUploadIcon />}
+        >
+          {inputFile ? inputFile.name : "Загрузить файл"}
+        </Button>
+      </label>
+      {/* <Typography>Выберите ранее сгенерированный ключ</Typography> */}
       <Box
         sx={{
           display: "flex",
           justifyContent: "space-between",
         }}
       >
-        <label sx={{ width: 190 }} htmlFor="contained-button-file">
+        {/* <label sx={{ width: 190 }} htmlFor="contained-button-file">
           <Input
             accept="text/plain"
             id="contained-button-file"
@@ -79,7 +106,7 @@ function Encode() {
           >
             Загрузить ключ
           </Button>
-        </label>
+        </label> */}
         <Button
           sx={{ width: 190 }}
           variant="contained"

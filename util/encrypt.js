@@ -1,3 +1,4 @@
+import { hexToBytes } from ".";
 import { additionMod2 } from "./additionMod2";
 import { methodL } from "./methodL";
 import { sConversion } from "./sConversion";
